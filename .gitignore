@@ -1,0 +1,15 @@
+# Created by .ignore support plugin (hsz.mobi)
+.vscode/**
+.idea/**
+node/
+node_modules/
+.classpath
+.project
+.settings/
+npm-debug.log
+build/
+*.iml
+
+# recursively traverse the file tree from src/ and pattern match *.js
+**/*.js
+**/*.js.map
