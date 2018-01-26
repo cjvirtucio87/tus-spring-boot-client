@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "@types/jest": "^22.1.0",
     "@types/react": "^15.0.22",
     "immutability-helper": "^2.1.2",
     "react-scripts": "0.9.5",
