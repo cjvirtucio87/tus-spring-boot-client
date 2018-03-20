@@ -180,7 +180,7 @@ const DownloadBtn = ({ fileName }) => {
           headers: {
               fileName
           },
-          responseType: 'stream'
+          responseType: 'arrayBuffer'
       })
       .then(data => {
           console.log(data);
