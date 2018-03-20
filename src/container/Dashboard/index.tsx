@@ -175,7 +175,12 @@ const onChunkToggle = dispatch => event => {
 }
 
 const DownloadBtn = ({ fileName }) => {
-  const onClick = () => axios.get(`localhost:8080/download/${fileName}/1`);
+  const onClick = () => axios.get(`localhost:8080/download/1`, {
+      headers: {
+          fileName
+      }
+  });
+
   return <button
     type='button'
     onClick={ onClick }
