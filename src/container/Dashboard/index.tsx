@@ -9,7 +9,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import { PART_SIZE, BASE_URI, FILENAME_PATTERN } from '../../constants';
-import { addFile, updateProgress, finishUpload, toggleChunkMode } from '../../actions';
+import { addFile, updateProgress, finishUpload, toggleChunkMode, showFilename } from '../../actions';
 
 import presentational from '../../presentational/';
 
@@ -107,6 +107,7 @@ const onAddFile = dispatch => chunked => event => {
   const file = event.target.files[0];
   reader.onloadend = onLoadEnd(dispatch)(file)(chunked);
   reader.readAsDataURL(file);
+  dispatch(showFilename(FILENAME_PATTERN.exec(file.name)[1]));
 }
 
 const uploadPart = dispatch => startTime => part => {
@@ -176,6 +177,7 @@ const onChunkToggle = dispatch => event => {
 // Store Connectors
 const mapStateToProps = state => ({
   file: state.file,
+  fileName: state.fileName,
   parts: state.parts,
   uploadDone: state.uploadDone,
   chunked: state.chunked,
@@ -188,7 +190,7 @@ const mapDispatchToProps = dispatch => ({
   onChunkToggle: onChunkToggle(dispatch)
 });
 
-const Dashboard = ({ onAddFile, onUploadFile, onChunkToggle, parts, progressData, uploadDone, chunked }) => (
+const Dashboard = ({ onAddFile, onUploadFile, onChunkToggle, fileName, parts, progressData, uploadDone, chunked }) => (
   <div className='Dashboard container-fluid'>
     <section className='row align-items-center justify-content-center'>
       <div className='col-4'>
@@ -216,6 +218,9 @@ const Dashboard = ({ onAddFile, onUploadFile, onChunkToggle, parts, progressData
           parts={ parts }
           progressData={ progressData }
         />
+      </div>
+      <div>
+        <p>{ fileName }</p>
       </div>
     </section>
   </div>

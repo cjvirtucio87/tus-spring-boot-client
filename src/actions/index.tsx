@@ -26,3 +26,8 @@ export const finishUpload = () => ({
 export const toggleChunkMode = () => ({
   type: 'TOGGLE_CHUNK_MODE'
 });
+
+export const showFilename = (fileName) => ({
+  type: 'SHOW_FILENAME',
+  fileName
+});

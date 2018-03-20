@@ -36,7 +36,13 @@ export const file = (state = { progressData: {}, chunked: true }, action) => {
       return {
         ...state,
         chunked: !state.chunked
-      }
+      };
+    case 'SHOW_FILENAME':
+      debugger
+      return {
+        ...state,
+        fileName: action.fileName
+      };
     default:
       return state;
   }
