@@ -178,9 +178,9 @@ const DownloadBtn = ({ fileName }) => {
   const onClick = () => {
       axios.get(`localhost:8080/download/file`, {
           headers: {
-              fileName,
-              'content-type': 'application/octet-stream'
-          }
+              fileName          
+          },
+          contentType: 'application/octet-stream'
       })
       .then(data => {
           console.log(data);
