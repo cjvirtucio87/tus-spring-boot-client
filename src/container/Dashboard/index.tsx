@@ -180,7 +180,7 @@ const DownloadBtn = ({ fileName }) => {
           headers: {
               fileName
           },
-          responseType: 'blob'
+          responseType: 'application/json'
       })
       .then(data => {
           console.log(data);
