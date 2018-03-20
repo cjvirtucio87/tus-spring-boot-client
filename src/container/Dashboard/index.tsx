@@ -174,6 +174,16 @@ const onChunkToggle = dispatch => event => {
   dispatch(toggleChunkMode());
 }
 
+const DownloadBtn = ({ fileName }) => {
+  const onClick = () => axios.get(`localhost:8080/download/${fileName}/1`);
+  return <button
+    type='button'
+    onClick={ onClick }
+  >
+    Download file
+  </button>;
+}
+
 // Store Connectors
 const mapStateToProps = state => ({
   file: state.file,
@@ -212,15 +222,13 @@ const Dashboard = ({ onAddFile, onUploadFile, onChunkToggle, fileName, parts, pr
         <h3>Upload Progress</h3>
         <p>This component will reveal a table showing the progress of { chunked ? "each chunk." : "the file." }</p>
         <p>{ uploadDone ? "Done!" : (parts ? "Your upload is in progress.." : "") }</p>
+        <DownloadBtn fileName={ fileName }/>
       </div>
       <div className='col-4'>
         <UploadProgress
           parts={ parts }
           progressData={ progressData }
         />
-      </div>
-      <div>
-        <p>{ fileName }</p>
       </div>
     </section>
   </div>
