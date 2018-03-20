@@ -179,7 +179,8 @@ const DownloadBtn = ({ fileName }) => {
       axios.get(`localhost:8080/download/file`, {
           headers: {
               fileName
-          }
+          },
+          responseType: 'blob'
       })
       .then(data => {
           console.log(data);
