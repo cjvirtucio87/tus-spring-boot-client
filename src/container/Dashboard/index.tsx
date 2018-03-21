@@ -181,6 +181,7 @@ const DownloadBtn = ({ fileName }) => {
       });
 
       a.defaults.headers.common['Accept'] = 'application/octet-stream';
+      a.defaults.headers.common['fileName'] = fileName;
       a.get('download/file', {
           responseType: 'arrayBuffer'
       })
