@@ -11,6 +11,8 @@ import { connect } from 'react-redux';
 import { PART_SIZE, BASE_URI, FILENAME_PATTERN } from '../../constants';
 import { addFile, updateProgress, finishUpload, toggleChunkMode, showFilename } from '../../actions';
 
+import FileSaver from 'file-saver';
+
 import presentational from '../../presentational/';
 
 import { computeProgress, computeElapsedTime } from '../../utils/local-math';
@@ -186,13 +188,7 @@ const DownloadBtn = ({ fileName }) => {
       .then(res => {
           const json = JSON.stringify(res.data);
           const blob = new Blob([json], { type: 'octet/stream' });
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          document.body.appendChild(a);
-          a.style.display = 'none';
-          a.download = fileName;
-          a.click();
-          window.URL.revokeObjectURL(url);
+          FileSaver.saveAs(blob, fileName);
       })
       .catch(err => {
           if (err.response) {
