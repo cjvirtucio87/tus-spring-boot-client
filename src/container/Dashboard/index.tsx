@@ -183,8 +183,8 @@ const DownloadBtn = ({ fileName }) => {
           },
           responseType: 'stream'
       })
-      .then(data => {
-          const url = window.URL.createObjectURL( new Blob(data) );
+      .then(res => {
+          const url = window.URL.createObjectURL( new Blob(res.data) );
           const link = document.createElement('a');
           link.href = url;
           link.setAttribute('download', 'file.pdf');
