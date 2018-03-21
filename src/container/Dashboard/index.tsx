@@ -176,14 +176,12 @@ const onChunkToggle = dispatch => event => {
 
 const DownloadBtn = ({ fileName }) => {
   const onClick = () => {
-      const a = axios.create({
-          baseURL: 'localhost:8080'
-      });
-
-      a.defaults.headers.common['Accept'] = 'application/octet-stream';
-      a.defaults.headers.common['fileName'] = fileName;
-      a.get('download/file', {
-          responseType: 'arrayBuffer'
+      axios.get('localhost:8080/download/file', {
+          headers: {
+              fileName
+//              'Accept': 'application/octet-stream'
+          },
+          responseType: 'stream'
       })
       .then(data => {
           console.log(data);
