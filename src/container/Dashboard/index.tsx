@@ -187,8 +187,13 @@ const DownloadBtn = ({ fileName }) => {
           console.log(data);
       })
       .catch(err => {
-          debugger;
-          console.log(err);
+          if (err.response) {
+              console.log(err.response);
+          } else if (err.request) {
+              console.log(err.request);
+          } else {
+              console.log(err.message);
+          }
       });
   };
 
