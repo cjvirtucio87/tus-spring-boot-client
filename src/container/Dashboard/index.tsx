@@ -179,7 +179,7 @@ const DownloadBtn = ({ fileName }) => {
       axios.get('localhost:8080/download/file', {
           headers: {
               fileName
-//              'Accept': 'application/octet-stream'
+              'Accept': 'application/octet-stream'
           },
           responseType: 'stream'
       })
@@ -187,6 +187,7 @@ const DownloadBtn = ({ fileName }) => {
           console.log(data);
       })
       .catch(err => {
+          debugger;
           console.log(err);
       });
   };
