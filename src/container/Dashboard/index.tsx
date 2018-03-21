@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import { PART_SIZE, BASE_URI, FILENAME_PATTERN } from '../../constants';
 import { addFile, updateProgress, finishUpload, toggleChunkMode, showFilename } from '../../actions';
 
-import FileSaver from 'file-saver';
+import { saveAs } from 'file-saver';
 
 import presentational from '../../presentational/';
 
@@ -188,7 +188,7 @@ const DownloadBtn = ({ fileName }) => {
       .then(res => {
           const json = JSON.stringify(res.data);
           const blob = new Blob([json], { type: 'octet/stream' });
-          FileSaver.saveAs(blob, fileName);
+          saveAs(blob, fileName);
       })
       .catch(err => {
           if (err.response) {
