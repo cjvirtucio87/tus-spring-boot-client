@@ -187,7 +187,7 @@ const DownloadBtn = ({ fileName }) => {
           const json = JSON.stringify(res.data);
           const blob = new Blob([json], { type: 'octet/stream' });
           const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
+          var a = document.createElement('a');
           document.body.appendChild(a);
           a.style = 'display: none';
           a.download = fileName;
