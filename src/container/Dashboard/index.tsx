@@ -4,6 +4,7 @@
 
   Use the mapStateToProps and mapDispatchToProps to connect this component to the store.
 */
+declare var saveAs: any;
 
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -21,8 +22,6 @@ import * as moment from 'moment';
 import * as Rx from 'rxjs';
 
 import './style.css';
-
-declare var saveAs: any;
 
 const { Uploader, UploadProgress } = presentational;
 
