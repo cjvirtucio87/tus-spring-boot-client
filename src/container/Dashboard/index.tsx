@@ -115,7 +115,7 @@ const onAddFile = dispatch => chunked => event => {
   reader.onloadend = onLoadEnd(dispatch)(file)(chunked);
   reader.readAsDataURL(file);
   dispatch(setFileMetadata({ 
-      name: FILEEXT_PATTERN.exec(file.name)[1], 
+      name: FILENAME_PATTERN.exec(file.name)[1], 
       type: file.type, 
       ext: FILEEXT_PATTERN.exec(file.name)[0]
   }));
