@@ -180,7 +180,7 @@ const DownloadBtn = ({ fileMetadata }) => {
           headers: {
               fileName: fileMetadata.name,
               fileType: fileMetadata.type,
-              'Accept': fileType
+              'Accept': fileMetadata.type
           },
           responseType: 'arrayBuffer'
       })
@@ -189,7 +189,7 @@ const DownloadBtn = ({ fileMetadata }) => {
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', fileName);
+          link.setAttribute('download', fileMetadata.name);
           document.body.appendChild(link);
           link.click();
       })
