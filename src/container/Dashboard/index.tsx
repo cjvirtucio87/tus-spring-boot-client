@@ -196,7 +196,7 @@ const DownloadBtn = ({ fileMetadata }) => {
               fileExt: fileMetadata.ext,
               'Accept': fileMetadata.type
           },
-          responseType: 'arrayBuffer'
+          responseType: 'blob'
       })
       .then(res => {
           const blob = new Blob([res.data], { type: fileMetadata.type });
