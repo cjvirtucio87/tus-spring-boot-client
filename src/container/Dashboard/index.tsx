@@ -204,6 +204,7 @@ const DownloadBtn = ({ fileMetadata }) => {
           const link = document.createElement('a');
           link.href = url;
           link.setAttribute('download', fileMetadata.name);
+          link.setAttribute('content', 'text/html;charset=utf-8');
           document.body.appendChild(link);
           link.click();
       })
