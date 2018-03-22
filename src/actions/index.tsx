@@ -27,7 +27,7 @@ export const toggleChunkMode = () => ({
   type: 'TOGGLE_CHUNK_MODE'
 });
 
-export const showFilename = (fileName) => ({
-  type: 'SHOW_FILENAME',
-  fileName
+export const setFileMetadata = (fileMetadata) => ({
+  type: 'SHOW_FILEMETADATA',
+  fileMetadata
 });

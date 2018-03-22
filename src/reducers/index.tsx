@@ -37,11 +37,11 @@ export const file = (state = { progressData: {}, chunked: true }, action) => {
         ...state,
         chunked: !state.chunked
       };
-    case 'SHOW_FILENAME':
+    case 'SHOW_FILEMETADATA':
       debugger
       return {
         ...state,
-        fileName: action.fileName
+        fileMetadata: action.fileMetadata
       };
     default:
       return state;

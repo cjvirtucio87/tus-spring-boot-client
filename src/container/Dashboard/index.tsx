@@ -9,7 +9,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import { PART_SIZE, BASE_URI, FILENAME_PATTERN } from '../../constants';
-import { addFile, updateProgress, finishUpload, toggleChunkMode, showFilename } from '../../actions';
+import { addFile, updateProgress, finishUpload, toggleChunkMode, setFileMetadata } from '../../actions';
 
 import presentational from '../../presentational/';
 
@@ -107,7 +107,7 @@ const onAddFile = dispatch => chunked => event => {
   const file = event.target.files[0];
   reader.onloadend = onLoadEnd(dispatch)(file)(chunked);
   reader.readAsDataURL(file);
-  dispatch(showFilename(FILENAME_PATTERN.exec(file.name)[1]));
+  dispatch(setFileMetadata({ fileName: file.name, fileType: file.type }));
 }
 
 const uploadPart = dispatch => startTime => part => {
@@ -174,17 +174,18 @@ const onChunkToggle = dispatch => event => {
   dispatch(toggleChunkMode());
 }
 
-const DownloadBtn = ({ fileName }) => {
+const DownloadBtn = ({ fileMetadata }) => {
   const onClick = () => {
       axios.get('http://localhost:8080/download/file', {
           headers: {
-              fileName,
-              'Accept': 'application/octet-stream'
+              fileName: fileMetadata.name,
+              fileType: fileMetadata.type,
+              'Accept': fileType
           },
-          responseType: 'stream'
+          responseType: 'arrayBuffer'
       })
       .then(res => {
-          const blob = new Blob(res.data.split(''), { type: 'octet/stream' });
+          const blob = new Blob([res.data], { type: 'octet/stream' });
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
@@ -214,7 +215,7 @@ const DownloadBtn = ({ fileName }) => {
 // Store Connectors
 const mapStateToProps = state => ({
   file: state.file,
-  fileName: state.fileName,
+  fileMetadata: state.fileMetadata,
   parts: state.parts,
   uploadDone: state.uploadDone,
   chunked: state.chunked,
@@ -227,7 +228,7 @@ const mapDispatchToProps = dispatch => ({
   onChunkToggle: onChunkToggle(dispatch)
 });
 
-const Dashboard = ({ onAddFile, onUploadFile, onChunkToggle, fileName, parts, progressData, uploadDone, chunked }) => (
+const Dashboard = ({ onAddFile, onUploadFile, onChunkToggle, fileMetadata, parts, progressData, uploadDone, chunked }) => (
   <div className='Dashboard container-fluid'>
     <section className='row align-items-center justify-content-center'>
       <div className='col-4'>
@@ -249,7 +250,7 @@ const Dashboard = ({ onAddFile, onUploadFile, onChunkToggle, fileName, parts, pr
         <h3>Upload Progress</h3>
         <p>This component will reveal a table showing the progress of { chunked ? "each chunk." : "the file." }</p>
         <p>{ uploadDone ? "Done!" : (parts ? "Your upload is in progress.." : "") }</p>
-        <DownloadBtn fileName={ fileName }/>
+        <DownloadBtn fileMetadata={ fileMetadata }/>
       </div>
       <div className='col-4'>
         <UploadProgress
