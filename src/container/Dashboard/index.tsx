@@ -148,10 +148,11 @@ const uploadPart = dispatch => startTime => part => {
   });
 };
 
-const onPartsComplete = fileName => partNumbers => fileSize => dispatch => {
+const onPartsComplete = fileName => fileExt => partNumbers => fileSize => dispatch => {
   axios.post(`${BASE_URI}/files/complete`, null, {
     headers: {
       fileName,
+      fileExt,
       partNumbers,
       fileSize
     }
@@ -165,7 +166,7 @@ const onPartsComplete = fileName => partNumbers => fileSize => dispatch => {
 
 const onUploadFile = dispatch => parts => event => {
   const startTime = moment();
-  const { fileName, fileSize } = parts[0];
+  const { fileName, fileExt, fileSize } = parts[0];
   const partNumbers = parts.map(p => p.partNumber);
   const len = parts.length;
 
@@ -176,7 +177,7 @@ const onUploadFile = dispatch => parts => event => {
   
   source.subscribe((doneParts: String[]) => {
     if (doneParts.every(p => p === "done")) {
-      onPartsComplete(fileName)(partNumbers)(fileSize)(dispatch);
+      onPartsComplete(fileName)(fileExt)(partNumbers)(fileSize)(dispatch);
     }
   });
 }
