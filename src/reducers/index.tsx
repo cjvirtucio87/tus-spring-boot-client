@@ -38,7 +38,7 @@ export const file = (state = { progressData: {}, chunked: true }, action) => {
         chunked: !state.chunked
       };
     case 'SHOW_FILEMETADATA':
-      debugger
+      
       return {
         ...state,
         fileMetadata: action.fileMetadata

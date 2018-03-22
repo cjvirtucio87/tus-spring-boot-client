@@ -89,8 +89,7 @@ const refreshFileData = data => (p,i) => ({
 
 const onLoadEnd = dispatch => file => chunked => () => {
   const fileName = FILENAME_PATTERN.exec(file.name)[1];
-  const fileExt = FILEEXT_PATTERN.exec(file.name)[1];
-  debugger;
+  const fileExt = FILEEXT_PATTERN.exec(file.name)[0];
   const fileType = file.type;
   const parts = chunked ? createFileParts(file, fileName, fileExt, 0, PART_SIZE, 0, []) : [createFilePart(file, fileName, fileExt)];
   const partNumbers = chunked ? parts.map(part => part.partNumber) : [0];
