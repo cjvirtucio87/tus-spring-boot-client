@@ -199,7 +199,7 @@ const DownloadBtn = ({ fileMetadata }) => {
           responseType: 'arrayBuffer'
       })
       .then(res => {
-          const blob = new Blob([res.data], { type: fileMetadata.type });
+          const blob = new Blob([JSON.stringify(res.data)], { type: fileMetadata.type });
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
