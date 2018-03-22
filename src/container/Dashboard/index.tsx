@@ -114,6 +114,7 @@ const onAddFile = dispatch => chunked => event => {
   const file = event.target.files[0];
   reader.onloadend = onLoadEnd(dispatch)(file)(chunked);
   reader.readAsDataURL(file);
+  console.log(file.type);
   dispatch(setFileMetadata({ 
       name: FILENAME_PATTERN.exec(file.name)[1], 
       type: file.type, 
@@ -198,7 +199,7 @@ const DownloadBtn = ({ fileMetadata }) => {
           responseType: 'arrayBuffer'
       })
       .then(res => {
-          const blob = new Blob([res.data], { type: 'octet/stream' });
+          const blob = new Blob([res.data], { type: fileMetadata.type });
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
