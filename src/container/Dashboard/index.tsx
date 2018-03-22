@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import { PART_SIZE, BASE_URI, FILENAME_PATTERN } from '../../constants';
+import { PART_SIZE, BASE_URI, FILENAME_PATTERN, FILEEXT_PATTERN } from '../../constants';
 import { addFile, updateProgress, finishUpload, toggleChunkMode, setFileMetadata } from '../../actions';
 
 import presentational from '../../presentational/';
@@ -28,10 +28,11 @@ const computeSpeed = (loaded, startTime) => Math.floor(loaded / ( computeElapsed
 
 const capAtFilesize = (value, fileSize) => value > fileSize ? fileSize : value;
 
-const createFilePart = (file, fileName) => (
+const createFilePart = (file, fileName, fileExt) => (
   {
     file, 
     fileName, 
+    fileExt,
     partNumber: 0, 
     uploadOffset: 0, 
     uploadLength: file.size,
@@ -39,13 +40,14 @@ const createFilePart = (file, fileName) => (
   }
 );
 
-const createFileParts = (file, fileName, uploadOffset, uploadLength, partNumber, parts) => {
+const createFileParts = (file, fileName, fileExt, uploadOffset, uploadLength, partNumber, parts) => {
   const fileSize = file.size;
   if (uploadOffset >= file.size) return parts;
   
   parts.push({
     file: file.slice(uploadOffset, uploadLength + 1),
     fileName,
+    fileExt,
     partNumber,
     partSize: capAtFilesize(uploadLength, fileSize) - capAtFilesize(uploadOffset, fileSize),
     uploadOffset: capAtFilesize(uploadOffset, fileSize),
@@ -56,6 +58,7 @@ const createFileParts = (file, fileName, uploadOffset, uploadLength, partNumber,
   return createFileParts(
     file, 
     fileName, 
+    fileExt,
     capAtFilesize(uploadOffset + PART_SIZE, fileSize), 
     capAtFilesize(uploadLength + PART_SIZE, fileSize), 
     partNumber + 1, parts);
@@ -86,13 +89,15 @@ const refreshFileData = data => (p,i) => ({
 
 const onLoadEnd = dispatch => file => chunked => () => {
   const fileName = FILENAME_PATTERN.exec(file.name)[1];
+  const fileExt = FILEEXT_PATTERN.exec(file.name)[1];
   const fileType = file.type;
-  const parts = chunked ? createFileParts(file, fileName, 0, PART_SIZE, 0, []) : [createFilePart(file, fileName)];
+  const parts = chunked ? createFileParts(file, fileName, fileExt, 0, PART_SIZE, 0, []) : [createFilePart(file, fileName, fileExt)];
   const partNumbers = chunked ? parts.map(part => part.partNumber) : [0];
 
   axios.get(`${BASE_URI}/file/${fileName}`, {
     headers: {
       fileName,
+      fileExt,
       fileType,
       partNumbers
     }
@@ -109,7 +114,11 @@ const onAddFile = dispatch => chunked => event => {
   const file = event.target.files[0];
   reader.onloadend = onLoadEnd(dispatch)(file)(chunked);
   reader.readAsDataURL(file);
-  dispatch(setFileMetadata({ fileName: file.name, fileType: file.type }));
+  dispatch(setFileMetadata({ 
+      name: FILEEXT_PATTERN.exec(file.name)[1], 
+      type: file.type, 
+      ext: FILEEXT_PATTERN.exec(file.name)[1]
+  }));
 }
 
 const uploadPart = dispatch => startTime => part => {
@@ -182,6 +191,7 @@ const DownloadBtn = ({ fileMetadata }) => {
           headers: {
               fileName: fileMetadata.name,
               fileType: fileMetadata.type,
+              fileExt: fileMetadata.ext,
               'Accept': fileMetadata.type
           },
           responseType: 'arrayBuffer'
