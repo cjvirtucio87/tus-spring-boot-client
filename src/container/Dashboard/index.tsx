@@ -86,12 +86,14 @@ const refreshFileData = data => (p,i) => ({
 
 const onLoadEnd = dispatch => file => chunked => () => {
   const fileName = FILENAME_PATTERN.exec(file.name)[1];
+  const fileType = file.type;
   const parts = chunked ? createFileParts(file, fileName, 0, PART_SIZE, 0, []) : [createFilePart(file, fileName)];
   const partNumbers = chunked ? parts.map(part => part.partNumber) : [0];
 
   axios.get(`${BASE_URI}/file/${fileName}`, {
     headers: {
       fileName,
+      fileType,
       partNumbers
     }
   })
