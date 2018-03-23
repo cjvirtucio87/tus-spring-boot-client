@@ -133,7 +133,7 @@ const uploadPart = dispatch => startTime => part => {
       uploadOffset,
       uploadLength,
       fileSize,
-      userName: 'cjvirtucio'
+      userName: 'placeholder'
     },
     onUploadProgress(ev) {
       const progress = computeProgress(ev.loaded, file.size);
