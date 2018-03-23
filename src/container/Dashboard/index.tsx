@@ -20,7 +20,7 @@ import * as Rx from 'rxjs';
 
 import './style.css';
 
-const { Uploader, UploadProgress } = presentational;
+const { Uploader, UploadProgress, DownloadBtn } = presentational;
 
 // Math
 const computeElapsedSeconds = computeElapsedTime('seconds');
@@ -185,46 +185,6 @@ const onUploadFile = dispatch => parts => event => {
 
 const onChunkToggle = dispatch => event => {
   dispatch(toggleChunkMode());
-}
-
-const DownloadBtn = ({ fileMetadata }) => {
-  const onClick = () => {
-      axios.get('http://localhost:8080/download/file', {
-          headers: {
-              fileName: fileMetadata.name,
-              fileType: fileMetadata.type,
-              fileExt: fileMetadata.ext,
-              'Accept': fileMetadata.type
-          },
-          responseType: 'blob'
-      })
-      .then(res => {
-          const blob = new Blob([res.data], { type: fileMetadata.type });
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', fileMetadata.name + fileMetadata.ext);
-          link.setAttribute('content', 'text/html;charset=utf-8');
-          document.body.appendChild(link);
-          link.click();
-      })
-      .catch(err => {
-          if (err.response) {
-              console.log(err.response);
-          } else if (err.request) {
-              console.log(err.request);
-          } else {
-              console.log(err.message);
-          }
-      });
-  };
-
-  return <button
-    type='button'
-    onClick={ onClick }
-  >
-    Download file
-  </button>;
 }
 
 // Store Connectors
