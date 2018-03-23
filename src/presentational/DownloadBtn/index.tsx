@@ -1,9 +1,11 @@
 import * as React from 'react';
 import axios from 'axios';
 
+import { BASE_URI } from '../../constants';
+
 const DownloadBtn = ({ fileMetadata }) => {
   const onClick = () => {
-      axios.get('http://localhost:8080/download/file', {
+      axios.get(`${BASE_URI}/download/file`, {
           headers: {
               fileName: fileMetadata.name,
               fileType: fileMetadata.type,

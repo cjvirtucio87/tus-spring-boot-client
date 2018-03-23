@@ -66,7 +66,7 @@ const createFileParts = (file, fileName, fileExt, uploadOffset, uploadLength, pa
 
 const onFileNotExist = dispatch => fileName => parts => () => {
   console.log(`File not found. Creating directory for file, ${fileName}`);
-  axios.post(`${BASE_URI}/files`, null, {
+  axios.post(`${BASE_URI}/upload/files`, null, {
     headers: {
       fileName
     }
@@ -94,7 +94,7 @@ const onLoadEnd = dispatch => file => chunked => () => {
   const parts = chunked ? createFileParts(file, fileName, fileExt, 0, PART_SIZE, 0, []) : [createFilePart(file, fileName, fileExt)];
   const partNumbers = chunked ? parts.map(part => part.partNumber) : [0];
 
-  axios.get(`${BASE_URI}/file/${fileName}`, {
+  axios.get(`${BASE_URI}/upload/file/${fileName}`, {
     headers: {
       fileName,
       fileExt,
@@ -125,7 +125,7 @@ const onAddFile = dispatch => chunked => event => {
 const uploadPart = dispatch => startTime => part => {
   const { partNumber, uploadOffset, uploadLength, file, fileName, fileSize } = part;
 
-  return axios.patch(`${BASE_URI}/file/${fileName}`, file, {
+  return axios.patch(`${BASE_URI}/upload/file/${fileName}`, file, {
     headers: {
       'content-type': 'text/plain',
       fileName,
@@ -150,7 +150,7 @@ const uploadPart = dispatch => startTime => part => {
 };
 
 const onPartsComplete = fileName => fileExt => partNumbers => fileSize => dispatch => {
-  axios.post(`${BASE_URI}/files/complete`, null, {
+  axios.post(`${BASE_URI}/upload/files/complete`, null, {
     headers: {
       fileName,
       fileExt,
