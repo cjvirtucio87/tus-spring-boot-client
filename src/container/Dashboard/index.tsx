@@ -15,7 +15,7 @@ import presentational from '../../presentational/';
 
 import { computeProgress, computeElapsedTime } from '../../utils/local-math';
 import axios from 'axios';
-import * as moment from 'moment';
+import moment from 'moment';
 import * as Rx from 'rxjs';
 
 import './style.css';

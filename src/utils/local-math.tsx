@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 
 export const computeProgress = (loaded, fileSize) => Math.floor((loaded / fileSize) * 100);
 
