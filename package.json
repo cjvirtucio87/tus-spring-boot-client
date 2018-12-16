@@ -6,7 +6,7 @@
     "@types/jest": "^22.1.0",
     "@types/react": "^15.0.22",
     "immutability-helper": "2.6.4",
-    "react-scripts": "0.9.5",
+    "react-scripts": "2.1.1",
     "tsx": "^1.0.0"
   },
   "dependencies": {
@@ -25,5 +25,11 @@
     "build": "tsc && react-scripts build",
     "test": "tsc && react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
