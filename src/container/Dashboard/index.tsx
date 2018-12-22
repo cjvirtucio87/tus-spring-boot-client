@@ -19,16 +19,17 @@ import moment from 'moment';
 import * as Rx from 'rxjs';
 
 import './style.css';
+import { FilePart } from '../../data/file-part';
 
 const { Uploader, UploadProgress, DownloadBtn } = presentational;
 
 // Math
 const computeElapsedSeconds = computeElapsedTime('seconds');
-const computeSpeed = (loaded, startTime) => Math.floor(loaded / ( computeElapsedSeconds(startTime) ));
+const computeSpeed = (loaded: number, startTime: Date) => Math.floor(loaded / ( computeElapsedSeconds(startTime) ));
 
-const capAtFilesize = (value, fileSize) => value > fileSize ? fileSize : value;
+const capAtFilesize = (value: number, fileSize: number) => value > fileSize ? fileSize : value;
 
-const createFilePart = (file, fileName, fileExt) => (
+const createFilePart = (file: Blob, fileName: string, fileExt: string) => (
   {
     file, 
     fileName, 
@@ -40,7 +41,7 @@ const createFilePart = (file, fileName, fileExt) => (
   }
 );
 
-const createFileParts = (file, fileName, fileExt, uploadOffset, uploadLength, partNumber, parts) => {
+const createFileParts = (file: Blob, fileName: string, fileExt: string, uploadOffset: number, uploadLength: number, partNumber: number, parts: Array<FilePart>): Array<FilePart> => {
   const fileSize = file.size;
   if (uploadOffset >= file.size) return parts;
   
@@ -197,7 +198,7 @@ const mapStateToProps = state => ({
   progressData: state.progressData
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   onAddFile: onAddFile(dispatch),
   onUploadFile: onUploadFile(dispatch),
   onChunkToggle: onChunkToggle(dispatch)

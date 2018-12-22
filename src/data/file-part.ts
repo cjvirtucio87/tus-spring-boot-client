@@ -1,17 +1,19 @@
 export class FilePart {
-    public file: File;
+    public file: Blob;
     public fileName: string;
     public fileExt: string;
     public partNumber: number;
+    public partSize: number;
     public uploadOffset: number;
     public uploadLength: number;
     public fileSize: number;
 
     constructor(
-        file: File, 
+        file: Blob, 
         fileName: string, 
         fileExt: string, 
         partNumber: number, 
+        partSize: number,
         uploadOffset: number,
         uploadLength: number,
         fileSize: number
@@ -20,6 +22,7 @@ export class FilePart {
         this.fileName = fileName; 
         this.fileExt = fileExt;
         this.partNumber = partNumber;
+        this.partSize = partSize;
         this.uploadOffset = uploadOffset;
         this.uploadLength = uploadLength;
         this.fileSize = fileSize;
