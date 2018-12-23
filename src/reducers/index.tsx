@@ -6,28 +6,7 @@
 
 import * as update from 'immutability-helper';
 import { ProgressData } from '../data/progress-data';
-import { FileMetadata } from '../data/file-metadata';
-import { FilePart } from '../data/file-part';
-
-interface ProgressDataCollection {
-  [key: number]: ProgressData
-}
-
-class State {
-  public parts: FilePart[];
-  public uploadDone: boolean;
-  public chunked: boolean;
-  public fileMetadata: FileMetadata;
-  public progressDataCollection: ProgressDataCollection;
-
-  constructor(parts: FilePart[], uploadDone: boolean, chunked: boolean = true, fileMetadata: FileMetadata, progressDataCollection: ProgressDataCollection = {}) {
-    this.parts = parts;
-    this.uploadDone = uploadDone;
-    this.chunked = chunked;
-    this.fileMetadata = fileMetadata;
-    this.progressDataCollection = progressDataCollection;
-  }
-}
+import { State } from '../data/state';
 
 const updateRecord = (state: State, progressData: ProgressData) => {
   const { partNumber, progress, speed } = progressData;
@@ -44,7 +23,7 @@ const updateRecord = (state: State, progressData: ProgressData) => {
   };
 };
 
-export const file = (state: State, action) => {
+export const file = (state: State, action: any) => {
   switch (action.type) {
     case 'ADD_FILE':
       return {

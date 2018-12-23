@@ -184,7 +184,7 @@ const onPartsComplete = (fileName: string) => (fileExt: string) => (partNumbers:
   });
 }
 
-const onUploadFile = (dispatch: any) => (parts: FilePart[]) => (event: any) => {
+const onUploadFile = (dispatch: any) => (parts: FilePart[]) => (event: React.MouseEvent<HTMLElement>) => {
   const startTime = moment();
   const { fileName, fileExt, fileSize } = parts[0];
   const partNumbers = parts.map(p => p.partNumber);
@@ -223,7 +223,7 @@ const mapDispatchToProps = (dispatch: any) => ({
 });
 
 const Dashboard = (dashboardProps: DashboardProps) => {
-  const { onAddFile, onUploadFile, onChunkToggle, fileMetadata, parts, progressData, uploadDone, chunked } = dashboardProps;
+  const { onAddFile, onUploadFile, onChunkToggle, fileMetadata, parts, progressDataCollection, uploadDone, chunked } = dashboardProps;
 
   return <div className='Dashboard container-fluid'>
     <section className='row align-items-center justify-content-center'>
@@ -251,7 +251,7 @@ const Dashboard = (dashboardProps: DashboardProps) => {
       <div className='col-4'>
         <UploadProgress
           parts={ parts }
-          progressData={ progressData }
+          progressDataCollection={ progressDataCollection }
         />
       </div>
     </section>
