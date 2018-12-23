@@ -5,15 +5,46 @@
 */
 
 import * as update from 'immutability-helper';
+import { ProgressData } from '../data/progress-data';
+import { FileMetadata } from '../data/file-metadata';
+import { FilePart } from '../data/file-part';
 
-const updateRecord = (state, progressParams) => {
-  const { partNumber, progress, speed } = progressParams;
-  const progressData =  update(state.progressData, { [partNumber]: { $set: { partNumber, progress, speed } } });
-  
-  return update(state, { progressData: { $set: progressData } });
+interface ProgressDataCollection {
+  [key: number]: ProgressData
 }
 
-export const file = (state = { progressData: {}, chunked: true }, action) => {
+class State {
+  public parts: FilePart[];
+  public uploadDone: boolean;
+  public chunked: boolean;
+  public fileMetadata: FileMetadata;
+  public progressDataCollection: ProgressDataCollection;
+
+  constructor(parts: FilePart[], uploadDone: boolean, chunked: boolean = true, fileMetadata: FileMetadata, progressDataCollection: ProgressDataCollection = {}) {
+    this.parts = parts;
+    this.uploadDone = uploadDone;
+    this.chunked = chunked;
+    this.fileMetadata = fileMetadata;
+    this.progressDataCollection = progressDataCollection;
+  }
+}
+
+const updateRecord = (state: State, progressData: ProgressData) => {
+  const { partNumber, progress, speed } = progressData;
+
+  return {
+    ...state,
+    progressDataCollection: {
+      [partNumber]: {
+        partNumber,
+        progress,
+        speed
+      }
+    }
+  };
+};
+
+export const file = (state: State, action) => {
   switch (action.type) {
     case 'ADD_FILE':
       return {
@@ -26,7 +57,7 @@ export const file = (state = { progressData: {}, chunked: true }, action) => {
         part: action.part
       };
     case 'UPDATE_PROGRESS':
-      return updateRecord(state, action.progressParams);
+      return updateRecord(state, action.progressData);
     case 'UPLOAD_DONE':
       return {
         ...state,
