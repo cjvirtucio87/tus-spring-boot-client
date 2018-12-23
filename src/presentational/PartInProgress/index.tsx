@@ -1,12 +1,14 @@
 import * as React from 'react';
-import { find } from 'lodash';
+import { PartInProgressProps } from '../../data/part-in-progress-props';
 
-const PartInProgress = ({ part, progress, speed }) => (
-  <tr className='PartInProgress'>
+const PartInProgress = (partInProgress: PartInProgressProps) => { 
+  const { part, progress, speed } = partInProgress;
+
+  return <tr className='PartInProgress'>
     <td>{ `${part.fileName}_${part.partNumber}` }</td>
     <td>{ progress ? progress : 0 }%</td>
     <td>{ speed ? speed : 0 } bytes/sec</td>
   </tr>
-);
+};
 
 export default PartInProgress;
