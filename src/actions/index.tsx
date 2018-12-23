@@ -1,14 +1,14 @@
 import { FilePart } from "../data/file-part";
-import { ProgressParams } from "../data/progress-params";
+import { ProgressData } from "../data/progress-data";
 import { FileMetadata } from "../data/file-metadata";
 
 /* 
   Actions are messages containing with payload for updating state.
 
-  Note the syntax regarding the payload: { file } and { progressParams } are synctatic sugar for { file: file } and { progressParams: progressParams } (ES6 feature).
+  Note the syntax regarding the payload: { file } and { progressData } are synctatic sugar for { file: file } and { progressData: progressData } (ES6 feature).
 */
 
-export const addFile = (parts: Array<FilePart>) => ({
+export const addFile = (parts: FilePart[]) => ({
   type: 'ADD_FILE',
   parts
 });
@@ -18,9 +18,9 @@ export const uploadPart = (part: FilePart) => ({
   part
 });
 
-export const updateProgress = (progressParams: ProgressParams) => ({
+export const updateProgress = (progressData: ProgressData) => ({
   type: 'UPDATE_PROGRESS',
-  progressParams
+  progressData
 });
 
 export const finishUpload = () => ({

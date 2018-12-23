@@ -1,4 +1,4 @@
-export class ProgressParams {
+export class ProgressData {
     public partNumber: number;
     public progress: number;
     public speed: number;

@@ -15,25 +15,27 @@ import presentational from '../../presentational/';
 
 import { computeProgress, computeElapsedTime } from '../../utils/local-math';
 import axios from 'axios';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import * as Rx from 'rxjs';
 
 import './style.css';
 import { FilePart } from '../../data/file-part';
+import { DashboardProps } from '../../data/dashboard-props';
 
 const { Uploader, UploadProgress, DownloadBtn } = presentational;
 
 // Math
 const computeElapsedSeconds = computeElapsedTime('seconds');
-const computeSpeed = (loaded: number, startTime: Date) => Math.floor(loaded / ( computeElapsedSeconds(startTime) ));
+const computeSpeed = (loaded: number, startTime: moment.Moment) => Math.floor(loaded / ( computeElapsedSeconds(startTime) ));
 
 const capAtFilesize = (value: number, fileSize: number) => value > fileSize ? fileSize : value;
 
-const createFilePart = (file: Blob, fileName: string, fileExt: string) => (
+const createFilePart = (file: Blob, fileName: string, fileExt: string): FilePart => (
   {
     file, 
     fileName, 
     fileExt,
+    partSize: file.size,
     partNumber: 0, 
     uploadOffset: 0, 
     uploadLength: file.size,
@@ -41,7 +43,7 @@ const createFilePart = (file: Blob, fileName: string, fileExt: string) => (
   }
 );
 
-const createFileParts = (file: Blob, fileName: string, fileExt: string, uploadOffset: number, uploadLength: number, partNumber: number, parts: Array<FilePart>): Array<FilePart> => {
+const createFileParts = (file: File, fileName: string, fileExt: string, uploadOffset: number, uploadLength: number, partNumber: number, parts: FilePart[]): FilePart[] => {
   const fileSize = file.size;
   if (uploadOffset >= file.size) return parts;
   
@@ -65,7 +67,7 @@ const createFileParts = (file: Blob, fileName: string, fileExt: string, uploadOf
     partNumber + 1, parts);
 }
 
-const onFileNotExist = dispatch => fileName => parts => () => {
+const onFileNotExist = (dispatch: any) => (fileName: string) => (parts: FilePart[]) => () => {
   console.log(`File not found. Creating directory for file, ${fileName}`);
   axios.post(`${BASE_URI}/upload/files`, null, {
     headers: {
@@ -81,16 +83,26 @@ const onFileNotExist = dispatch => fileName => parts => () => {
   });
 }
 
-const refreshFileData = data => (p,i) => ({
+const refreshFileData = (data: number[]) => (p: FilePart, i: number) => ({
   ...p,
   file: p.file.slice(data[i]),
   uploadOffset: p.uploadOffset + data[i], 
   loaded: ( data[i] / p.partSize ) * 100
 })
 
-const onLoadEnd = dispatch => file => chunked => () => {
-  const fileName = FILENAME_PATTERN.exec(file.name)[1];
-  const fileExt = FILEEXT_PATTERN.exec(file.name)[0];
+const onLoadEnd = (dispatch: any) => (file: File) => (chunked: boolean) => () => {
+  if (file == null) {
+    throw new Error("file must be of type File, and must not be null");
+  }
+
+  const match = FILENAME_PATTERN.exec(file.name);
+
+  if (match == null) {
+    throw new Error("invalid filename");
+  }
+
+  const fileName = match[1];
+  const fileExt = match[0];
   const fileType = file.type;
   const parts = chunked ? createFileParts(file, fileName, fileExt, 0, PART_SIZE, 0, []) : [createFilePart(file, fileName, fileExt)];
   const partNumbers = chunked ? parts.map(part => part.partNumber) : [0];
@@ -110,20 +122,26 @@ const onLoadEnd = dispatch => file => chunked => () => {
   .catch(onFileNotExist(dispatch)(fileName)(parts));
 }
 
-const onAddFile = dispatch => chunked => event => {
+const onAddFile = (dispatch: any) => (chunked: boolean) => (event: any) => {
   const reader = new FileReader();
   const file = event.target.files[0];
+  const match = FILENAME_PATTERN.exec(file.name);
+
+  if (match == null) {
+    throw new Error(`invalid filename, ${file.name}`)
+  }
+
   reader.onloadend = onLoadEnd(dispatch)(file)(chunked);
   reader.readAsDataURL(file);
   console.log(file.type);
   dispatch(setFileMetadata({ 
-      name: FILENAME_PATTERN.exec(file.name)[1], 
+      name: match[1], 
       type: file.type, 
-      ext: FILEEXT_PATTERN.exec(file.name)[0]
+      ext: match[0]
   }));
 }
 
-const uploadPart = dispatch => startTime => part => {
+const uploadPart = (dispatch: any) => (startTime: moment.Moment) => (part: FilePart) => {
   const { partNumber, uploadOffset, uploadLength, file, fileName, fileSize } = part;
 
   return axios.patch(`${BASE_URI}/upload/file/${fileName}`, file, {
@@ -150,7 +168,7 @@ const uploadPart = dispatch => startTime => part => {
   });
 };
 
-const onPartsComplete = fileName => fileExt => partNumbers => fileSize => dispatch => {
+const onPartsComplete = (fileName: string) => (fileExt: string) => (partNumbers: number[]) => (fileSize: number) => (dispatch: any) => {
   axios.post(`${BASE_URI}/upload/files/complete`, null, {
     headers: {
       fileName,
@@ -166,7 +184,7 @@ const onPartsComplete = fileName => fileExt => partNumbers => fileSize => dispat
   });
 }
 
-const onUploadFile = dispatch => parts => event => {
+const onUploadFile = (dispatch: any) => (parts: FilePart[]) => (event: any) => {
   const startTime = moment();
   const { fileName, fileExt, fileSize } = parts[0];
   const partNumbers = parts.map(p => p.partNumber);
@@ -177,19 +195,19 @@ const onUploadFile = dispatch => parts => event => {
     .take(len)
     .combineAll();
   
-  source.subscribe((doneParts: String[]) => {
-    if (doneParts.every(p => p === "done")) {
+  source.subscribe((doneParts: any) => {
+    if (doneParts.every((p: string) => p === "done")) {
       onPartsComplete(fileName)(fileExt)(partNumbers)(fileSize)(dispatch);
     }
   });
 }
 
-const onChunkToggle = dispatch => event => {
+const onChunkToggle = (dispatch: any) => (event: any) => {
   dispatch(toggleChunkMode());
 }
 
 // Store Connectors
-const mapStateToProps = state => ({
+const mapStateToProps = (state: any) => ({
   file: state.file,
   fileMetadata: state.fileMetadata,
   parts: state.parts,
@@ -198,14 +216,16 @@ const mapStateToProps = state => ({
   progressData: state.progressData
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: any) => ({
   onAddFile: onAddFile(dispatch),
   onUploadFile: onUploadFile(dispatch),
   onChunkToggle: onChunkToggle(dispatch)
 });
 
-const Dashboard = ({ onAddFile, onUploadFile, onChunkToggle, fileMetadata, parts, progressData, uploadDone, chunked }) => (
-  <div className='Dashboard container-fluid'>
+const Dashboard = (dashboardProps: DashboardProps) => {
+  const { onAddFile, onUploadFile, onChunkToggle, fileMetadata, parts, progressData, uploadDone, chunked } = dashboardProps;
+
+  return <div className='Dashboard container-fluid'>
     <section className='row align-items-center justify-content-center'>
       <div className='col-4'>
         <h3>File Uploader</h3>
@@ -236,7 +256,7 @@ const Dashboard = ({ onAddFile, onUploadFile, onChunkToggle, fileMetadata, parts
       </div>
     </section>
   </div>
-);
+};
 
 export default connect(
   mapStateToProps,
