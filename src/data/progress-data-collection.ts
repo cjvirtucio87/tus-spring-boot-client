@@ -1,5 +1,5 @@
 import { ProgressData } from "./progress-data";
 
-export interface ProgressDataCollection {
-  [key: number]: ProgressData
+export class ProgressDataCollection {
+  [key: number]: ProgressData;
 }

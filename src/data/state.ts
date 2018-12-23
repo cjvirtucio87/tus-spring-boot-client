@@ -9,7 +9,7 @@ export class State {
   public fileMetadata: FileMetadata;
   public progressDataCollection: ProgressDataCollection;
 
-  constructor(parts: FilePart[], uploadDone: boolean, chunked: boolean = true, fileMetadata: FileMetadata, progressDataCollection: ProgressDataCollection = {}) {
+  constructor(parts: FilePart[] = [], uploadDone: boolean = false, chunked: boolean = true, fileMetadata: FileMetadata = new FileMetadata(), progressDataCollection: ProgressDataCollection = {}) {
     this.parts = parts;
     this.uploadDone = uploadDone;
     this.chunked = chunked;

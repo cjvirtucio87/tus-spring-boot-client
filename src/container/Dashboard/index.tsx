@@ -21,6 +21,7 @@ import * as Rx from 'rxjs';
 import './style.css';
 import { FilePart } from '../../data/file-part';
 import { DashboardProps } from '../../data/dashboard-props';
+import { DashboardState } from '../../data/dashboard-state';
 
 const { Uploader, UploadProgress, DownloadBtn } = presentational;
 
@@ -155,6 +156,7 @@ const uploadPart = (dispatch: any) => (startTime: moment.Moment) => (part: FileP
       userName: 'placeholder'
     },
     onUploadProgress(ev) {
+      console.log(ev.loaded);
       const progress = computeProgress(ev.loaded, file.size);
       const speed = computeSpeed(ev.loaded, startTime);
 
@@ -207,13 +209,13 @@ const onChunkToggle = (dispatch: any) => (event: any) => {
 }
 
 // Store Connectors
-const mapStateToProps = (state: any) => ({
+const mapStateToProps = (state: DashboardState) => ({
   file: state.file,
   fileMetadata: state.fileMetadata,
   parts: state.parts,
   uploadDone: state.uploadDone,
   chunked: state.chunked,
-  progressData: state.progressData
+  progressData: state.progressDataCollection
 });
 
 const mapDispatchToProps = (dispatch: any) => ({

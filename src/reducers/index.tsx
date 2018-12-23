@@ -4,7 +4,6 @@
   You can merge multiple reducers using the combineReducers function.
 */
 
-import * as update from 'immutability-helper';
 import { ProgressData } from '../data/progress-data';
 import { State } from '../data/state';
 
@@ -23,7 +22,7 @@ const updateRecord = (state: State, progressData: ProgressData) => {
   };
 };
 
-export const file = (state: State, action: any) => {
+export const file = (state: State = new State(), action: any) => {
   switch (action.type) {
     case 'ADD_FILE':
       return {

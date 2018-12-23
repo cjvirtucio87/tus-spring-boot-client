@@ -13,3 +13,4 @@ build/
 # recursively traverse the file tree from src/ and pattern match *.js
 **/*.js
 **/*.js.map
+**/*.jsx*
