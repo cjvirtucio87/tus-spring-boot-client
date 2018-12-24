@@ -31,18 +31,19 @@ const computeSpeed = (loaded: number, startTime: moment.Moment) => Math.floor(lo
 
 const capAtFilesize = (value: number, fileSize: number) => value > fileSize ? fileSize : value;
 
-const createFilePart = (file: Blob, fileName: string, fileExt: string): FilePart => (
-  {
+const createFilePart = (file: Blob, fileName: string, fileExt: string): FilePart => {
+  return {
     file, 
     fileName, 
     fileExt,
+    loaded: 0,
     partSize: file.size,
     partNumber: 0, 
     uploadOffset: 0, 
     uploadLength: file.size,
     fileSize: file.size
   }
-);
+};
 
 const createFileParts = (file: File, fileName: string, fileExt: string, uploadOffset: number, uploadLength: number, partNumber: number, parts: FilePart[]): FilePart[] => {
   const fileSize = file.size;
@@ -52,6 +53,7 @@ const createFileParts = (file: File, fileName: string, fileExt: string, uploadOf
     file: file.slice(uploadOffset, uploadLength + 1),
     fileName,
     fileExt,
+    loaded: 0,
     partNumber,
     partSize: capAtFilesize(uploadLength, fileSize) - capAtFilesize(uploadOffset, fileSize),
     uploadOffset: capAtFilesize(uploadOffset, fileSize),
@@ -156,9 +158,9 @@ const uploadPart = (dispatch: any) => (startTime: moment.Moment) => (part: FileP
       userName: 'placeholder'
     },
     onUploadProgress(ev) {
-      console.log(ev.loaded);
       const progress = computeProgress(ev.loaded, file.size);
       const speed = computeSpeed(ev.loaded, startTime);
+      console.log(`Progress for file, ${fileName}: ${progress}%`);
 
       dispatch(updateProgress({ partNumber, progress, speed }));
     }

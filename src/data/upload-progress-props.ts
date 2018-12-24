@@ -1,11 +1,11 @@
 import { ProgressDataCollection } from "./progress-data-collection";
-import { FileProgress } from "./file-progress";
+import { FilePart } from "./file-part";
 
 export class UploadProgressProps {
-    public parts: FileProgress[];
+    public parts: FilePart[];
     public progressDataCollection: ProgressDataCollection;
 
-    constructor(parts: FileProgress[], progressDataCollection: ProgressDataCollection) {
+    constructor(parts: FilePart[], progressDataCollection: ProgressDataCollection) {
         this.parts = parts;
         this.progressDataCollection = progressDataCollection;
     }
