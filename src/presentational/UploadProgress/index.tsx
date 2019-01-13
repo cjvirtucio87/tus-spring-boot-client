@@ -1,11 +1,20 @@
 import * as React from 'react';
-import { find } from 'lodash';
 import PartInProgress from '../PartInProgress';
+import { UploadProgressProps } from '../../data/upload-progress-props';
+import { ProgressDataCollection } from '../../data/progress-data-collection';
+import { FilePart } from '../../data/file-part';
 
-const onMap = progressData => part => {
-  const partProgress = progressData[part.partNumber];
-  const defaultProgress = { progress: part.loaded ? part.loaded : 0, speed: 0 };
-  const { progress, speed } = partProgress ? partProgress : defaultProgress;
+const onMap = (progressDataCollection: ProgressDataCollection = {})=> (part: FilePart) => {
+  const partProgress = progressDataCollection[part.partNumber];
+  var progress: number, speed: number;
+
+  if (partProgress == null) {
+    progress = 0;
+    speed = 0;
+  } else {
+    progress = partProgress.progress;
+    speed = partProgress.speed;
+  }
 
   return (
     <PartInProgress 
@@ -17,8 +26,9 @@ const onMap = progressData => part => {
   );
 }
 
-const UploadProgress = ({ parts, progressData }) => {
-  const partNodes = parts ? parts.map(onMap(progressData)) : [];
+const UploadProgress = (uploadProgressProps: UploadProgressProps) => {
+  const { parts, progressDataCollection } = uploadProgressProps;
+  const partNodes = parts ? parts.map(onMap(progressDataCollection)) : [];
 
   return (
     <table className='UploadProgress table'>

@@ -4,16 +4,20 @@
   You can merge multiple reducers using the combineReducers function.
 */
 
-import * as update from 'immutability-helper';
+import { ProgressData } from '../data/progress-data';
+import { State } from '../data/state';
 
-const updateRecord = (state, progressParams) => {
-  const { partNumber, progress, speed } = progressParams;
-  const progressData =  update(state.progressData, { [partNumber]: { $set: { partNumber, progress, speed } } });
-  
-  return update(state, { progressData: { $set: progressData } });
-}
+const updateRecord = (state: State, progressData: ProgressData) => {
+  const newProgressDataCollection = { ...(state.progressDataCollection) };
+  newProgressDataCollection[progressData.partNumber] = progressData;
 
-export const file = (state = { progressData: {}, chunked: true }, action) => {
+  return {
+    ...state,
+    progressDataCollection: newProgressDataCollection
+  };
+};
+
+export const file = (state: State = new State(), action: any) => {
   switch (action.type) {
     case 'ADD_FILE':
       return {
@@ -26,7 +30,7 @@ export const file = (state = { progressData: {}, chunked: true }, action) => {
         part: action.part
       };
     case 'UPDATE_PROGRESS':
-      return updateRecord(state, action.progressParams);
+      return updateRecord(state, action.progressData);
     case 'UPLOAD_DONE':
       return {
         ...state,

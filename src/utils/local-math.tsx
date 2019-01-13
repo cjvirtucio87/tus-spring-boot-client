@@ -1,5 +1,5 @@
-import * as moment from 'moment';
+import moment, { unitOfTime } from 'moment';
 
-export const computeProgress = (loaded, fileSize) => Math.floor((loaded / fileSize) * 100);
+export const computeProgress = (loaded: number, fileSize: number) => Math.floor((loaded / fileSize) * 100);
 
-export const computeElapsedTime = (unit) => (startTime) => moment().diff(startTime, unit) || 1;
+export const computeElapsedTime = (unit: unitOfTime.Base) => (startTime: moment.Moment) => moment().diff(startTime, unit) || 1;

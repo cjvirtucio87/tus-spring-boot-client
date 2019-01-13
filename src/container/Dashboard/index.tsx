@@ -15,32 +15,38 @@ import presentational from '../../presentational/';
 
 import { computeProgress, computeElapsedTime } from '../../utils/local-math';
 import axios from 'axios';
-import * as moment from 'moment';
-import * as Rx from 'rxjs';
+import moment, { Moment } from 'moment';
+import { from, pipe } from 'rxjs';
+import { map, take, combineAll } from 'rxjs/operators';
 
 import './style.css';
+import { FilePart } from '../../data/file-part';
+import { DashboardProps } from '../../data/dashboard-props';
+import { DashboardState } from '../../data/dashboard-state';
 
 const { Uploader, UploadProgress, DownloadBtn } = presentational;
 
 // Math
 const computeElapsedSeconds = computeElapsedTime('seconds');
-const computeSpeed = (loaded, startTime) => Math.floor(loaded / ( computeElapsedSeconds(startTime) ));
+const computeSpeed = (loaded: number, startTime: moment.Moment) => Math.floor(loaded / ( computeElapsedSeconds(startTime) ));
 
-const capAtFilesize = (value, fileSize) => value > fileSize ? fileSize : value;
+const capAtFilesize = (value: number, fileSize: number) => value > fileSize ? fileSize : value;
 
-const createFilePart = (file, fileName, fileExt) => (
-  {
+const createFilePart = (file: Blob, fileName: string, fileExt: string): FilePart => {
+  return {
     file, 
     fileName, 
     fileExt,
+    loaded: 0,
+    partSize: file.size,
     partNumber: 0, 
     uploadOffset: 0, 
     uploadLength: file.size,
     fileSize: file.size
   }
-);
+};
 
-const createFileParts = (file, fileName, fileExt, uploadOffset, uploadLength, partNumber, parts) => {
+const createFileParts = (file: File, fileName: string, fileExt: string, uploadOffset: number, uploadLength: number, partNumber: number, parts: FilePart[]): FilePart[] => {
   const fileSize = file.size;
   if (uploadOffset >= file.size) return parts;
   
@@ -48,6 +54,7 @@ const createFileParts = (file, fileName, fileExt, uploadOffset, uploadLength, pa
     file: file.slice(uploadOffset, uploadLength + 1),
     fileName,
     fileExt,
+    loaded: 0,
     partNumber,
     partSize: capAtFilesize(uploadLength, fileSize) - capAtFilesize(uploadOffset, fileSize),
     uploadOffset: capAtFilesize(uploadOffset, fileSize),
@@ -64,7 +71,7 @@ const createFileParts = (file, fileName, fileExt, uploadOffset, uploadLength, pa
     partNumber + 1, parts);
 }
 
-const onFileNotExist = dispatch => fileName => parts => () => {
+const onFileNotExist = (dispatch: any) => (fileName: string) => (parts: FilePart[]) => () => {
   console.log(`File not found. Creating directory for file, ${fileName}`);
   axios.post(`${BASE_URI}/upload/files`, null, {
     headers: {
@@ -80,16 +87,26 @@ const onFileNotExist = dispatch => fileName => parts => () => {
   });
 }
 
-const refreshFileData = data => (p,i) => ({
+const refreshFileData = (data: number[]) => (p: FilePart, i: number) => ({
   ...p,
   file: p.file.slice(data[i]),
   uploadOffset: p.uploadOffset + data[i], 
   loaded: ( data[i] / p.partSize ) * 100
 })
 
-const onLoadEnd = dispatch => file => chunked => () => {
-  const fileName = FILENAME_PATTERN.exec(file.name)[1];
-  const fileExt = FILEEXT_PATTERN.exec(file.name)[0];
+const onLoadEnd = (dispatch: any) => (file: File) => (chunked: boolean) => () => {
+  if (file == null) {
+    throw new Error("file must be of type File, and must not be null");
+  }
+
+  const match = FILENAME_PATTERN.exec(file.name);
+
+  if (match == null) {
+    throw new Error("invalid filename");
+  }
+
+  const fileName = match[1];
+  const fileExt = match[0];
   const fileType = file.type;
   const parts = chunked ? createFileParts(file, fileName, fileExt, 0, PART_SIZE, 0, []) : [createFilePart(file, fileName, fileExt)];
   const partNumbers = chunked ? parts.map(part => part.partNumber) : [0];
@@ -109,20 +126,25 @@ const onLoadEnd = dispatch => file => chunked => () => {
   .catch(onFileNotExist(dispatch)(fileName)(parts));
 }
 
-const onAddFile = dispatch => chunked => event => {
+const onAddFile = (dispatch: any) => (chunked: boolean) => (event: any) => {
   const reader = new FileReader();
   const file = event.target.files[0];
+  const match = FILENAME_PATTERN.exec(file.name);
+
+  if (match == null) {
+    throw new Error(`invalid filename, ${file.name}`)
+  }
+
   reader.onloadend = onLoadEnd(dispatch)(file)(chunked);
   reader.readAsDataURL(file);
-  console.log(file.type);
   dispatch(setFileMetadata({ 
-      name: FILENAME_PATTERN.exec(file.name)[1], 
+      name: match[1], 
       type: file.type, 
-      ext: FILEEXT_PATTERN.exec(file.name)[0]
+      ext: match[0]
   }));
 }
 
-const uploadPart = dispatch => startTime => part => {
+const uploadPart = (dispatch: any) => (startTime: moment.Moment) => (part: FilePart) => {
   const { partNumber, uploadOffset, uploadLength, file, fileName, fileSize } = part;
 
   return axios.patch(`${BASE_URI}/upload/file/${fileName}`, file, {
@@ -149,7 +171,7 @@ const uploadPart = dispatch => startTime => part => {
   });
 };
 
-const onPartsComplete = fileName => fileExt => partNumbers => fileSize => dispatch => {
+const onPartsComplete = (fileName: string) => (fileExt: string) => (partNumbers: number[]) => (fileSize: number) => (dispatch: any) => {
   axios.post(`${BASE_URI}/upload/files/complete`, null, {
     headers: {
       fileName,
@@ -165,46 +187,47 @@ const onPartsComplete = fileName => fileExt => partNumbers => fileSize => dispat
   });
 }
 
-const onUploadFile = dispatch => parts => event => {
+const onUploadFile = (dispatch: any) => (parts: FilePart[]) => (event: React.MouseEvent<HTMLElement>) => {
   const startTime = moment();
   const { fileName, fileExt, fileSize } = parts[0];
   const partNumbers = parts.map(p => p.partNumber);
   const len = parts.length;
 
-  const source = Rx.Observable.from(parts)
-    .map(uploadPart(dispatch)(startTime))
-    .take(len)
-    .combineAll();
-  
-  source.subscribe((doneParts: String[]) => {
-    if (doneParts.every(p => p === "done")) {
+  from(parts).pipe(
+    map(uploadPart(dispatch)(startTime)),
+    take(len),
+    combineAll()
+  ).subscribe((doneParts: any) => {
+    if (doneParts.every((p: string) => p === "done")) {
       onPartsComplete(fileName)(fileExt)(partNumbers)(fileSize)(dispatch);
     }
   });
 }
 
-const onChunkToggle = dispatch => event => {
+const onChunkToggle = (dispatch: any) => (event: any) => {
   dispatch(toggleChunkMode());
 }
 
 // Store Connectors
-const mapStateToProps = state => ({
+const mapStateToProps = (state: DashboardState) => ({
   file: state.file,
   fileMetadata: state.fileMetadata,
   parts: state.parts,
   uploadDone: state.uploadDone,
   chunked: state.chunked,
-  progressData: state.progressData
+  progressDataCollection: state.progressDataCollection
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: any) => ({
   onAddFile: onAddFile(dispatch),
   onUploadFile: onUploadFile(dispatch),
   onChunkToggle: onChunkToggle(dispatch)
 });
 
-const Dashboard = ({ onAddFile, onUploadFile, onChunkToggle, fileMetadata, parts, progressData, uploadDone, chunked }) => (
-  <div className='Dashboard container-fluid'>
+const Dashboard = (dashboardProps: DashboardProps) => {
+  const { onAddFile, onUploadFile, onChunkToggle, fileMetadata, parts, progressDataCollection, uploadDone, chunked } = dashboardProps;
+
+  return <div className='Dashboard container-fluid'>
     <section className='row align-items-center justify-content-center'>
       <div className='col-4'>
         <h3>File Uploader</h3>
@@ -230,12 +253,12 @@ const Dashboard = ({ onAddFile, onUploadFile, onChunkToggle, fileMetadata, parts
       <div className='col-4'>
         <UploadProgress
           parts={ parts }
-          progressData={ progressData }
+          progressDataCollection={ progressDataCollection }
         />
       </div>
     </section>
   </div>
-);
+};
 
 export default connect(
   mapStateToProps,
