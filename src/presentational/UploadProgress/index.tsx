@@ -6,8 +6,15 @@ import { FilePart } from '../../data/file-part';
 
 const onMap = (progressDataCollection: ProgressDataCollection = {})=> (part: FilePart) => {
   const partProgress = progressDataCollection[part.partNumber];
-  const defaultProgress = { progress: part.loaded ? part.loaded : 0, speed: 0 };
-  const { progress, speed } = partProgress ? partProgress : defaultProgress;
+  var progress, speed;
+
+  if (partProgress == null) {
+    progress = 0;
+    speed = 0;
+  } else {
+    progress = partProgress.progress;
+    speed = partProgress.speed;
+  }
 
   return (
     <PartInProgress 

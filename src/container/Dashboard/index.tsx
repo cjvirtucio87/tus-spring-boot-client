@@ -136,7 +136,6 @@ const onAddFile = (dispatch: any) => (chunked: boolean) => (event: any) => {
 
   reader.onloadend = onLoadEnd(dispatch)(file)(chunked);
   reader.readAsDataURL(file);
-  console.log(file.type);
   dispatch(setFileMetadata({ 
       name: match[1], 
       type: file.type, 
@@ -160,7 +159,6 @@ const uploadPart = (dispatch: any) => (startTime: moment.Moment) => (part: FileP
     onUploadProgress(ev) {
       const progress = computeProgress(ev.loaded, file.size);
       const speed = computeSpeed(ev.loaded, startTime);
-      console.log(`Progress for file, ${fileName}: ${progress}%`);
 
       dispatch(updateProgress({ partNumber, progress, speed }));
     }
@@ -217,7 +215,7 @@ const mapStateToProps = (state: DashboardState) => ({
   parts: state.parts,
   uploadDone: state.uploadDone,
   chunked: state.chunked,
-  progressData: state.progressDataCollection
+  progressDataCollection: state.progressDataCollection
 });
 
 const mapDispatchToProps = (dispatch: any) => ({

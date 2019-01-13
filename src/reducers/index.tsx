@@ -8,18 +8,18 @@ import { ProgressData } from '../data/progress-data';
 import { State } from '../data/state';
 
 const updateRecord = (state: State, progressData: ProgressData) => {
-  const { partNumber, progress, speed } = progressData;
+  const newProgressDataCollection = { ...(state.progressDataCollection) };
+  newProgressDataCollection[progressData.partNumber] = progressData;
 
-  return {
+  const newState = {
     ...state,
-    progressDataCollection: {
-      [partNumber]: {
-        partNumber,
-        progress,
-        speed
-      }
-    }
+    progressDataCollection: newProgressDataCollection
   };
+
+  console.log("Reducers.updateRecord vvvv");
+  console.log(newState);
+
+  return newState;
 };
 
 export const file = (state: State = new State(), action: any) => {
