@@ -16,7 +16,8 @@ import presentational from '../../presentational/';
 import { computeProgress, computeElapsedTime } from '../../utils/local-math';
 import axios from 'axios';
 import moment, { Moment } from 'moment';
-import * as Rx from 'rxjs';
+import { from, pipe } from 'rxjs';
+import { map, take, combineAll } from 'rxjs/operators';
 
 import './style.css';
 import { FilePart } from '../../data/file-part';
@@ -192,12 +193,13 @@ const onUploadFile = (dispatch: any) => (parts: FilePart[]) => (event: React.Mou
   const partNumbers = parts.map(p => p.partNumber);
   const len = parts.length;
 
-  const source = Rx.Observable.from(parts)
-    .map(uploadPart(dispatch)(startTime))
-    .take(len)
-    .combineAll();
-  
-  source.subscribe((doneParts: any) => {
+  const source = pipe(
+    map(uploadPart(dispatch)(startTime)),
+    take(len),
+    combineAll()
+  );
+
+  source(from(parts)).subscribe((doneParts: any) => {
     if (doneParts.every((p: string) => p === "done")) {
       onPartsComplete(fileName)(fileExt)(partNumbers)(fileSize)(dispatch);
     }
