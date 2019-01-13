@@ -193,13 +193,11 @@ const onUploadFile = (dispatch: any) => (parts: FilePart[]) => (event: React.Mou
   const partNumbers = parts.map(p => p.partNumber);
   const len = parts.length;
 
-  const source = pipe(
+  from(parts).pipe(
     map(uploadPart(dispatch)(startTime)),
     take(len),
     combineAll()
-  );
-
-  source(from(parts)).subscribe((doneParts: any) => {
+  ).subscribe((doneParts: any) => {
     if (doneParts.every((p: string) => p === "done")) {
       onPartsComplete(fileName)(fileExt)(partNumbers)(fileSize)(dispatch);
     }
