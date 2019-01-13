@@ -11,15 +11,10 @@ const updateRecord = (state: State, progressData: ProgressData) => {
   const newProgressDataCollection = { ...(state.progressDataCollection) };
   newProgressDataCollection[progressData.partNumber] = progressData;
 
-  const newState = {
+  return {
     ...state,
     progressDataCollection: newProgressDataCollection
   };
-
-  console.log("Reducers.updateRecord vvvv");
-  console.log(newState);
-
-  return newState;
 };
 
 export const file = (state: State = new State(), action: any) => {
