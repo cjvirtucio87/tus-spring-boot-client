@@ -21,11 +21,23 @@ describe('action creators', () => {
             mockFilePart(),
             mockFilePart()
         ];
-        const expectedAction = {
+
+        expect(
+            actions.addFile(fileParts)
+        ).toEqual({
             type: 'ADD_FILE',
             parts: fileParts
-        };
+        });
+    });
 
-        expect(actions.addFile(fileParts)).toEqual(expectedAction);
+    it('should create an action for uploading a part', () => {
+        const filePart = mockFilePart();
+
+        expect(
+            actions.uploadPart(filePart)
+        ).toEqual({
+            type: 'UPLOAD_PART',
+            part: filePart
+        });
     });
 });
