@@ -1,41 +1,12 @@
-import * as actions from '../../src/actions';
-import { FilePart } from '../../src/data/file-part';
-import { ProgressData } from '../data/progress-data';
-import { FileMetadata } from '../data/file-metadata';
-
-const mockFilemetadata = (args: any = {}) =>
-    new FileMetadata(
-        'mockFile',
-        'pdf',
-        '.pdf'
-    );
-
-const mockFilePart = (args: any = {}) =>
-    new FilePart(
-        new Blob(),
-        'mockfile',
-        'pdf',
-        0,
-        0,
-        args.partSize,
-        args.uploadOffset,
-        args.uploadLength,
-        args.fileSize,
-    );
-
-const mockProgressData = (args: any = {}) =>
-    new ProgressData(
-        0,
-        0,
-        0
-    );
+import * as actions from '../actions';
+import * as mocks from '../test-helpers/mocks';
 
 describe('action creators', () => {
     it('should create an action for adding a file', () => {
         const fileParts = [
-            mockFilePart(),
-            mockFilePart(),
-            mockFilePart()
+            mocks.mockFilePart(),
+            mocks.mockFilePart(),
+            mocks.mockFilePart()
         ];
 
         expect(
@@ -47,7 +18,7 @@ describe('action creators', () => {
     });
 
     it('should create an action for uploading a part', () => {
-        const filePart = mockFilePart();
+        const filePart = mocks.mockFilePart();
 
         expect(
             actions.uploadPart(filePart)
@@ -58,7 +29,7 @@ describe('action creators', () => {
     });
 
     it('should create an action for updating upload progress for a file part', () => {
-        const progressData = mockProgressData();
+        const progressData = mocks.mockProgressData();
 
         expect(
             actions.updateProgress(progressData)
@@ -85,7 +56,7 @@ describe('action creators', () => {
     });
 
     it('should create an action for setting the file metadata', () => {
-        const fileMetadata = mockFilemetadata();
+        const fileMetadata = mocks.mockFilemetadata();
 
         expect(
             actions.setFileMetadata(fileMetadata)
