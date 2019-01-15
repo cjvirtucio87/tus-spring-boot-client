@@ -24,11 +24,6 @@ export const file = (state: State = new State(), action: any) => {
         ...state,
         parts: action.parts
       };
-    case 'UPLOAD_PART':
-      return {
-        ...state,
-        part: action.part
-      };
     case 'UPDATE_PROGRESS':
       return updateRecord(state, action.progressData);
     case 'UPLOAD_DONE':

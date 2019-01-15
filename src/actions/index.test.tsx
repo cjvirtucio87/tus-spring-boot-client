@@ -17,17 +17,6 @@ describe('action creators', () => {
         });
     });
 
-    it('should create an action for uploading a part', () => {
-        const filePart = mocks.mockFilePart();
-
-        expect(
-            actions.uploadPart(filePart)
-        ).toEqual({
-            type: 'UPLOAD_PART',
-            part: filePart
-        });
-    });
-
     it('should create an action for updating upload progress for a file part', () => {
         const progressData = mocks.mockProgressData();
 

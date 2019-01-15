@@ -13,11 +13,6 @@ export const addFile = (parts: FilePart[]) => ({
   parts
 });
 
-export const uploadPart = (part: FilePart) => ({
-  type: 'UPLOAD_PART',
-  part
-});
-
 export const updateProgress = (progressData: ProgressData) => ({
   type: 'UPDATE_PROGRESS',
   progressData
