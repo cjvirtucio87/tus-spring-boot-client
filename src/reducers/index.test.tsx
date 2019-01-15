@@ -74,4 +74,20 @@ describe('reducers', () => {
 
         expect(secondToggledChunked).toBeFalsy();
     });
+
+    it('shows the file metadata', () => {
+        const fileMetadata = mocks.mockFileMetadata();
+
+        const newState = new State(undefined, undefined, undefined, fileMetadata);
+
+        expect(
+            reducers.file(
+                new State(),
+                {
+                    type: 'SHOW_FILEMETADATA',
+                    fileMetadata: fileMetadata
+                }
+            )
+        ).toEqual(newState);
+    })
 });

@@ -2,7 +2,7 @@ import { FilePart } from '../data/file-part';
 import { ProgressData } from '../data/progress-data';
 import { FileMetadata } from '../data/file-metadata';
 
-export const mockFilemetadata = (args: any = {}) =>
+export const mockFileMetadata = (args: any = {}) =>
     new FileMetadata(
         'mockFile',
         'pdf',

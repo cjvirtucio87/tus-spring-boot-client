@@ -45,7 +45,7 @@ describe('action creators', () => {
     });
 
     it('should create an action for setting the file metadata', () => {
-        const fileMetadata = mocks.mockFilemetadata();
+        const fileMetadata = mocks.mockFileMetadata();
 
         expect(
             actions.setFileMetadata(fileMetadata)
