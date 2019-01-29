@@ -1,9 +1,3 @@
-/* 
-  Reducers are handlers that deal with the messages(actions).
-
-  You can merge multiple reducers using the combineReducers function.
-*/
-
 import { ProgressData } from '../data/progress-data';
 import { State } from '../data/state';
 
