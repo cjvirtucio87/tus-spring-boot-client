@@ -1,6 +1,10 @@
+import axios from 'axios';
 import { FilePart } from '../data/file-part';
-import { ProgressData } from '../data/progress-data';
 import { FileMetadata } from '../data/file-metadata';
+import MockAdapter from 'axios-mock-adapter';
+import { ProgressData } from '../data/progress-data';
+
+export const mockClient = (args: any = {}) => new MockAdapter(axios);
 
 export const mockFileMetadata = (args: any = {}) =>
     new FileMetadata(
@@ -11,7 +15,7 @@ export const mockFileMetadata = (args: any = {}) =>
 
 export const mockFilePart = (args: any = {}) =>
     new FilePart(
-        new Blob(),
+        new Blob([''], { type: 'text/html' }),
         'mockfile',
         'pdf',
         0,
