@@ -25,8 +25,6 @@ export class Upload {
     public uploadFilePartAsync(filePart: FilePart, onUploadProgress: (ev: any) => void): Promise<string> {
         const { partNumber, uploadOffset, uploadLength, file, fileName, fileSize } = filePart;
 
-        console.log(filePart);
-
         return this.client.updateUpload(
             `/upload/file/${fileName}`,
             new UpdateUploadHeaders(

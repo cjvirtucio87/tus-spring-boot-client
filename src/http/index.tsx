@@ -1,4 +1,4 @@
-import Axios, { AxiosAdapter, AxiosRequestConfig, AxiosResponse } from "axios";
+import { AxiosResponse, AxiosInstance } from "axios";
 import { UpdateUploadHeaders } from "../data/update-upload-headers";
 
 /**
@@ -6,14 +6,14 @@ import { UpdateUploadHeaders } from "../data/update-upload-headers";
  */
 export class Client {
     private baseUri: string;
-    private client: AxiosAdapter;
+    private client: AxiosInstance;
 
     /**
      * Initializes an instance of {@link http.Client}.
      * @param The base URI that calls will be made to.
      * @param client The axios.AxiosAdapter for making calls over the network.
      */
-    constructor(baseUri: string, client: AxiosAdapter) {
+    constructor(baseUri: string, client: AxiosInstance) {
         this.baseUri = baseUri;
         this.client = client;
     }
@@ -31,20 +31,13 @@ export class Client {
         data: any = {}, 
         onUploadProgress: (ev: any) => void): Promise<AxiosResponse> {
         
-        console.log(updateUploadHeaders);
-
-        Axios.interceptors.request.use(request => {
-            console.log(request);
-            
-            return request;
-        });
-        
-        return this.client({
-            method: 'patch',
-            url: `${this.baseUri}${endpoint}`,
-            headers: updateUploadHeaders,
-            data: data,
-            onUploadProgress
-        });
+        return this.client.patch(
+            `${this.baseUri}${endpoint}`,
+            data,
+            {
+                onUploadProgress,
+                headers: updateUploadHeaders
+            }
+        );
     }
 }
