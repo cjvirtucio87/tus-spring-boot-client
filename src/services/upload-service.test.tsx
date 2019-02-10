@@ -1,7 +1,6 @@
 import { Upload } from "./upload-service";
 import * as mocks from "../test-helpers/mocks";
 import { Client } from "../http";
-import axios from 'axios';
 
 jest.mock('../http');
 
