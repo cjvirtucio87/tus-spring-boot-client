@@ -2,6 +2,7 @@ import { Upload } from "./upload-service";
 import * as mocks from "../test-helpers/mocks";
 import { Client } from "../http";
 import { UpdateUploadHeaders } from "../data/update-upload-headers";
+import { AxiosInstance } from "axios";
 
 jest.mock('../http');
 
@@ -21,7 +22,7 @@ describe('uploadFilePartAsync', () => {
 
         const uploadService = new Upload(
             new (jest.fn<Client>(
-                (baseUri: string) => ({
+                (baseUri: string, client: AxiosInstance) => ({
                     updateUpload: (endpoint: string, updateUploadHeaders: UpdateUploadHeaders) => {
                         if (validateUpdateUpload(`${baseUri}${endpoint}`, updateUploadHeaders)) {
                             return Promise.resolve()
@@ -30,7 +31,7 @@ describe('uploadFilePartAsync', () => {
                         return Promise.reject();
                     }
                 })
-            ))(testBaseUri)
+            ))(testBaseUri, null)
         );
 
         expect(await uploadService.uploadFilePartAsync(mockFilePart, () => {})).toEqual('done');
