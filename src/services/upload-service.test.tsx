@@ -7,12 +7,18 @@ jest.mock('axios');
 
 describe('uploadFilePartAsync', () => {
     it('uploads a file part', async () => {
-        const mockFilePart = mocks.mockFilePart({partSize: 1, uploadOffset: 0, uploadLength: 1, fileSize: 1});
+        const mockFilePart = mocks.mockFilePart();
         const baseUri = 'http://notarealdomain.com'; 
 
         const mockPatch = jest.spyOn(axios, 'patch');
 
-        mockPatch.mockImplementation(() => Promise.resolve({}));
+        mockPatch.mockImplementation((url, body, config) => {
+            if (url === `${baseUri}/upload/file/${mockFilePart.fileName}`) {
+                return Promise.resolve();
+            }
+
+            return Promise.reject();
+        });
 
         const uploadService = new Upload(new Client(baseUri, axios));
 
