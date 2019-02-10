@@ -1,29 +1,28 @@
 import { Upload } from "./upload-service";
 import * as mocks from "../test-helpers/mocks";
 import { Client } from "../http";
-import axios from "axios";
+import axios from 'axios';
 
-jest.mock('axios');
+jest.mock('../http');
 
 describe('uploadFilePartAsync', () => {
     it('uploads a file part', async () => {
         const mockFilePart = mocks.mockFilePart();
-        const baseUri = 'http://notarealdomain.com'; 
+        const testBaseUri = 'http://notarealdomain.com';
+        const uploadService = new Upload(
+            new (jest.fn<Client>(
+                baseUri => ({
+                    updateUpload: () => {
+                        if (baseUri == testBaseUri) {
+                            return Promise.resolve()
+                        }
 
-        const mockPatch = jest.spyOn(axios, 'patch');
-
-        mockPatch.mockImplementation((url, body, config) => {
-            if (url === `${baseUri}/upload/file/${mockFilePart.fileName}`) {
-                return Promise.resolve();
-            }
-
-            return Promise.reject();
-        });
-
-        const uploadService = new Upload(new Client(baseUri, axios));
+                        return Promise.reject();
+                    }
+                })
+            ))(testBaseUri)
+        );
 
         expect(await uploadService.uploadFilePartAsync(mockFilePart, () => {})).toEqual('done');
-
-        expect(mockPatch.mock.calls.length).toEqual(1);
     });
 })
