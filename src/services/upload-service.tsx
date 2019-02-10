@@ -29,10 +29,10 @@ export class Upload {
             `/upload/file/${fileName}`,
             new UpdateUploadHeaders(
                 fileName,
+                fileSize,
                 partNumber,
                 uploadOffset,
                 uploadLength,
-                fileSize,
                 'placeholder'
             ),
             file,

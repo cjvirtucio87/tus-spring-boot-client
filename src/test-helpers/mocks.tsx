@@ -2,6 +2,12 @@ import { FilePart } from '../data/file-part';
 import { FileMetadata } from '../data/file-metadata';
 import { ProgressData } from '../data/progress-data';
 
+const defaultMockFilePartArgs = {
+    partSize: 1,
+    uploadOffset: 1,
+    uploadLength: 1,
+    fileSize: 1
+};
 
 export const mockFileMetadata = (args: any = {}) =>
     new FileMetadata(
@@ -10,7 +16,7 @@ export const mockFileMetadata = (args: any = {}) =>
         '.pdf'
     );
 
-export const mockFilePart = (args: any = {}) =>
+export const mockFilePart = (args: any = defaultMockFilePartArgs) =>
     new FilePart(
         new Blob([''], { type: 'text/html' }),
         'mockfile',
