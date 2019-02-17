@@ -1,6 +1,6 @@
 import { FilePart } from "../data/file-part";
 import moment, { unitOfTime } from 'moment';
-import { Client } from "../http";
+import { Client } from "../http/api";
 import { UpdateUploadHeaders } from "../data/update-upload-headers";
 
 /** 

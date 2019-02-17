@@ -1,10 +1,9 @@
 import { Upload } from "./upload-service";
 import * as mocks from "../test-helpers/mocks";
-import { Client } from "../http";
 import { UpdateUploadHeaders } from "../data/update-upload-headers";
-import { AxiosInstance } from "axios";
+import Axios, { AxiosInstance, AxiosResponse } from "axios";
 
-jest.mock('../http');
+jest.mock('../http/api');
 
 
 describe('uploadFilePartAsync', () => {
@@ -21,17 +20,27 @@ describe('uploadFilePartAsync', () => {
             && updateUploadHeaders.uploadOffset == mockFilePart.uploadOffset;
 
         const uploadService = new Upload(
-            new (jest.fn<Client>(
+            new (jest.fn(
                 (baseUri: string, client: AxiosInstance) => ({
-                    updateUpload: (endpoint: string, updateUploadHeaders: UpdateUploadHeaders) => {
-                        if (validateUpdateUpload(`${baseUri}${endpoint}`, updateUploadHeaders)) {
-                            return Promise.resolve()
-                        }
+                    updateUpload(
+                        endpoint: string, 
+                        updateUploadHeaders: UpdateUploadHeaders, 
+                        data: any, 
+                        onUploadProgress: (ev: any) => void): Promise<AxiosResponse> {
+                            if (validateUpdateUpload(`${baseUri}${endpoint}`, updateUploadHeaders)) {
+                                return Promise.resolve<AxiosResponse<any>>({
+                                    data: {},
+                                    status: 200,
+                                    statusText: 'OK',
+                                    headers: {},
+                                    config: {}
+                                });
+                            }
 
-                        return Promise.reject();
+                            return Promise.reject();
                     }
                 })
-            ))(testBaseUri, null)
+            ))(testBaseUri, Axios.create())
         );
 
         expect(await uploadService.uploadFilePartAsync(mockFilePart, () => {})).toEqual('done');
