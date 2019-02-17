@@ -1,10 +1,11 @@
 import { AxiosResponse, AxiosInstance } from "axios";
 import { UpdateUploadHeaders } from "../data/update-upload-headers";
+import { Client } from "./api";
 
 /**
  * Client for making calls over the network.
  */
-export class Client {
+export class BasicClient implements Client {
     private baseUri: string;
     private client: AxiosInstance;
 
