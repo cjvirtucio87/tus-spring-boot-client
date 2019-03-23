@@ -1,4 +1,4 @@
-import { Upload } from "./upload-service";
+import { Upload } from "./upload-impl";
 import * as mocks from "../test-helpers/mocks";
 import { UpdateUploadHeaders } from "../data/update-upload-headers";
 import Axios, { AxiosInstance, AxiosResponse } from "axios";
