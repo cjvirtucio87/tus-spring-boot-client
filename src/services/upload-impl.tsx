@@ -2,9 +2,10 @@ import { FilePart } from "../data/file-part";
 import moment, { unitOfTime } from 'moment';
 import { Client } from "../http/api";
 import { UpdateUploadHeaders } from "../data/update-upload-headers";
+import { UploadService } from "./upload-api";
 
 
-export class Upload {
+export class Upload implements UploadService {
     private client: Client;
 
     /**
@@ -15,11 +16,7 @@ export class Upload {
         this.client = client;
     }
 
-    /**
-     * Upload a file part asynchronously.
-     * @param filePart The {@link FilePart} to be uploaded.
-     * @param startTime The {@link Date} representing the start time of the upload process.
-     */
+    /** @inheritdoc */
     public uploadFilePartAsync(filePart: FilePart, onUploadProgress: (ev: any) => void): Promise<string> {
         const { partNumber, uploadOffset, uploadLength, file, fileName, fileSize } = filePart;
 
@@ -38,10 +35,12 @@ export class Upload {
         ).then(() => 'done');
     }
     
+    /** @inheritdoc */
     public computeProgress(loaded: number, fileSize: number): number {
         return Math.floor((loaded / fileSize) * 100);
     }
 
+    /** @inheritdoc */
     public computeElapsedTime(unit: unitOfTime.Base, startTime: Date): number {
         return moment().diff(startTime, unit) || 1;
     }
