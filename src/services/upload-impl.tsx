@@ -41,7 +41,7 @@ export class Upload implements UploadService {
     }
 
     /** @inheritdoc */
-    public computeElapsedTime(unit: unitOfTime.Base, startTime: Date): number {
-        return moment().diff(startTime, unit) || 1;
+    public computeElapsedTime(unit: unitOfTime.Base, startTime: Date, endTime: Date): number {
+        return moment(endTime).diff(startTime, unit) || 1;
     }
 }

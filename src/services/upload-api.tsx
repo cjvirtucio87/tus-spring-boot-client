@@ -19,7 +19,8 @@ export interface UploadService {
     /**
      * Compute the delta between the current {@link Date} and the given start time.
      * @param unit The unit of time that the delta will be in.
-     * @param startTime The {@link Date} with which the delta will be computed.
+     * @param startTime The {@link Date} that will be considered as the start time.
+     * @param endTime The {@link Date} that will be considered as the end time.
      */
-    computeElapsedTime(unit: unitOfTime.Base, startTime: Date): number;
+    computeElapsedTime(unit: unitOfTime.Base, startTime: Date, endTime: Date): number;
 }

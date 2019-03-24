@@ -3,6 +3,7 @@ import * as mocks from "../test-helpers/mocks";
 import { UpdateUploadHeaders } from "../data/update-upload-headers";
 import Axios, { AxiosInstance, AxiosResponse } from "axios";
 import { BasicClient } from "../http/basic";
+import moment, { unitOfTime } from 'moment';
 
 jest.mock('../http/api');
 
@@ -55,3 +56,13 @@ describe('computeProgress', () => {
         expect(uploadService.computeProgress(200, 1000)).toEqual(20);
     });
 });
+
+describe('computeElapsedTime', () => {
+    it('computes the time elapsed since the given start time', () => {
+        const uploadService = new Upload(new BasicClient('localhost', Axios));
+        const endTime = moment([2004, 7, 4]);
+        const startTime = moment([2004, 7, 1]);
+
+        expect(uploadService.computeElapsedTime('days', startTime.toDate(), endTime.toDate())).toEqual(3);
+    })
+})

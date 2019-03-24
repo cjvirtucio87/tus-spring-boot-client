@@ -13,7 +13,6 @@ import { addFile, updateProgress, finishUpload, toggleChunkMode, setFileMetadata
 
 import presentational from '../../presentational/';
 
-import { computeProgress, computeElapsedTime } from '../../utils/local-math';
 import axios from 'axios';
 import moment, { Moment } from 'moment';
 import { from, pipe } from 'rxjs';
@@ -23,12 +22,14 @@ import './style.css';
 import { FilePart } from '../../data/file-part';
 import { DashboardProps } from '../../data/dashboard-props';
 import { DashboardState } from '../../data/dashboard-state';
+import { Upload } from '../../services/upload-impl';
+import { BasicClient } from '../../http/basic';
 
 const { Uploader, UploadProgress, DownloadBtn } = presentational;
 
-// Math
-const computeElapsedSeconds = computeElapsedTime('seconds');
-const computeSpeed = (loaded: number, startTime: moment.Moment) => Math.floor(loaded / ( computeElapsedSeconds(startTime) ));
+const uploadService = new Upload(
+  new BasicClient("localhost", axios)
+);
 
 const capAtFilesize = (value: number, fileSize: number) => value > fileSize ? fileSize : value;
 
@@ -158,8 +159,12 @@ const uploadPart = (dispatch: any) => (startTime: moment.Moment) => (part: FileP
       userName: 'placeholder'
     },
     onUploadProgress(ev) {
-      const progress = computeProgress(ev.loaded, file.size);
-      const speed = computeSpeed(ev.loaded, startTime);
+      const progress = uploadService.computeProgress(ev.loaded, file.size);
+      const speed = Math.floor(ev.loaded / uploadService.computeElapsedTime(
+        'seconds', 
+        startTime.toDate(), 
+        moment().toDate())
+      );
 
       dispatch(updateProgress({ partNumber, progress, speed }));
     }
